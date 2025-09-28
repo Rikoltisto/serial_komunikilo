@@ -1,6 +1,8 @@
 # Memdifino
+# Dosierujo
 ŝlosilvorto/.tauri
 node_modules
 dist
-.env
 .vscode
+# Dosiero
+eldonado.ps1
