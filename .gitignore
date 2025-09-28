@@ -1,3 +1,4 @@
 # Memdifino
 .tauri
 node_modules
+dist
