@@ -39,47 +39,25 @@ jobs:
       - name: Instali Antaŭpartajn Dependaĵojn
         run: bun install
 
-      - name: Kontroli Informojn pri Sekretoj
-        run: |
-          echo "=== 环境信息 ==="
-          echo "运行器: $RUNNER_OS"
-          echo "工作目录: $GITHUB_WORKSPACE"
-          echo "仓库: $GITHUB_REPOSITORY"
-          echo "触发者: $GITHUB_ACTOR"
-          echo "作业ID: $GITHUB_JOB"
-          echo "运行器名称: $RUNNER_NAME"
-          echo "运行器环境: $RUNNER_ENVIRONMENT"
-          
-          echo ""
-          echo "=== 系统信息 ==="
-          uname -a
-          echo "主机名: $(hostname)"
-          echo "IP地址: $(hostname -I 2>/dev/null || echo '无法获取')"
-          
-          echo ""
-          echo "=== 目录结构 ==="
-          pwd
-          ls -la
-
         # Uzi Tauri-actions
-      # - name: Konstrui la Aplikaĵon
-      #   id: build
-      #   uses: tauri-apps/tauri-action@v0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     # Privata Ŝlosilo
-      #     TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-      #     # Pasfrazo por la Privata Ŝlosilo
-      #     TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
-      #   with:
-      #     tagName: app-v__VERSION__
-      #     releaseName: "App v__VERSION__"
-      #     releaseBody: "Vidu la resursojn por elŝuti kaj instali ĉi tiun version."
-      #     releaseDraft: true
-      #     prerelease: false
-      #     args: ${{ matrix.args }}
+      - name: Konstrui la Aplikaĵon
+        id: build
+        uses: tauri-apps/tauri-action@v0
+        env:
+          $env:GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Privata Ŝlosilo
+          $env:TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          # Pasfrazo por la Privata Ŝlosilo
+          $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: app-v__VERSION__
+          releaseName: "App v__VERSION__"
+          releaseBody: "Vidu la resursojn por elŝuti kaj instali ĉi tiun version."
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
 
       # - name: Ruli sian propran skripton
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  run: bun .github\Skriptoj\ĝisdatigilo.mjs
+      #   env:
+      #       $env:GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: bun .github\Skriptoj\ĝisdatigilo.mjs
