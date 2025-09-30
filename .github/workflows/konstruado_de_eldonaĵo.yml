@@ -41,28 +41,25 @@ jobs:
 
       - name: Kontroli Informojn pri Sekretoj
         run: |
-          echo "=== Private Key Analysis ==="
-          if [ -n "$TAURI_KEY" ]; then
-            echo "✓ Private Key is set"
-            echo "Key length: ${#TAURI_KEY} characters"
-            echo "First 10 chars: '$(echo -n "$TAURI_KEY" | head -c 10)'"
-            echo "Last 10 chars: '$(echo -n "$TAURI_KEY" | tail -c 10)'"
-            echo "First line: '$(echo "$TAURI_KEY" | head -1)'"
-            echo "Last line: '$(echo "$TAURI_KEY" | tail -1)'"
-          else
-            echo "✗ Private Key is empty"
-          fi
-
+          echo "=== 环境信息 ==="
+          echo "运行器: $RUNNER_OS"
+          echo "工作目录: $GITHUB_WORKSPACE"
+          echo "仓库: $GITHUB_REPOSITORY"
+          echo "触发者: $GITHUB_ACTOR"
+          echo "作业ID: $GITHUB_JOB"
+          echo "运行器名称: $RUNNER_NAME"
+          echo "运行器环境: $RUNNER_ENVIRONMENT"
+          
           echo ""
-          echo "=== Password Analysis ==="
-          if [ -n "$TAURI_PWD" ]; then
-            echo "✓ Password is set"
-            echo "Password length: ${#TAURI_PWD} characters"
-            echo "First 5 chars: '$(echo -n "$TAURI_PWD" | head -c 5)'"
-            echo "Last 5 chars: '$(echo -n "$TAURI_PWD" | tail -c 5)'"
-          else
-            echo "✗ Password is empty"
-          fi
+          echo "=== 系统信息 ==="
+          uname -a
+          echo "主机名: $(hostname)"
+          echo "IP地址: $(hostname -I 2>/dev/null || echo '无法获取')"
+          
+          echo ""
+          echo "=== 目录结构 ==="
+          pwd
+          ls -la
 
         # Uzi Tauri-actions
       # - name: Konstrui la Aplikaĵon
