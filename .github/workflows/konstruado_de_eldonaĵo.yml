@@ -56,8 +56,3 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
-
-      # - name: Ruli sian propran skripton
-      #   env:
-      #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: bun .github\Skriptoj\ĝisdatigilo.mjs
