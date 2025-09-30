@@ -53,7 +53,7 @@ jobs:
           tagName: eldono-v__VERSION__
           releaseName: "Eldonaĵo v__VERSION__"
           releaseBody: "Vidu la resursojn por elŝuti kaj instali ĉi tiun version."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
 
