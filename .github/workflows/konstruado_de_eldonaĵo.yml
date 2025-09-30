@@ -41,27 +41,46 @@ jobs:
 
       - name: Kontroli Informojn pri Sekretoj
         run: |
-          echo "Private key length: ${#TAURI_SIGNING_PRIVATE_KEY}"
-          echo "Password length: ${#TAURI_SIGNING_PRIVATE_KEY_PASSWORD}"
-          echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+          echo "=== Private Key Analysis ==="
+          if [ -n "$TAURI_KEY" ]; then
+            echo "✓ Private Key is set"
+            echo "Key length: ${#TAURI_KEY} characters"
+            echo "First 10 chars: '$(echo -n "$TAURI_KEY" | head -c 10)'"
+            echo "Last 10 chars: '$(echo -n "$TAURI_KEY" | tail -c 10)'"
+            echo "First line: '$(echo "$TAURI_KEY" | head -1)'"
+            echo "Last line: '$(echo "$TAURI_KEY" | tail -1)'"
+          else
+            echo "✗ Private Key is empty"
+          fi
+
+          echo ""
+          echo "=== Password Analysis ==="
+          if [ -n "$TAURI_PWD" ]; then
+            echo "✓ Password is set"
+            echo "Password length: ${#TAURI_PWD} characters"
+            echo "First 5 chars: '$(echo -n "$TAURI_PWD" | head -c 5)'"
+            echo "Last 5 chars: '$(echo -n "$TAURI_PWD" | tail -c 5)'"
+          else
+            echo "✗ Password is empty"
+          fi
 
         # Uzi Tauri-actions
-      - name: Konstrui la Aplikaĵon
-        id: build
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Privata Ŝlosilo
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # Pasfrazo por la Privata Ŝlosilo
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
-        with:
-          tagName: app-v__VERSION__
-          releaseName: "App v__VERSION__"
-          releaseBody: "Vidu la resursojn por elŝuti kaj instali ĉi tiun version."
-          releaseDraft: true
-          prerelease: false
-          args: ${{ matrix.args }}
+      # - name: Konstrui la Aplikaĵon
+      #   id: build
+      #   uses: tauri-apps/tauri-action@v0
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     # Privata Ŝlosilo
+      #     TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+      #     # Pasfrazo por la Privata Ŝlosilo
+      #     TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+      #   with:
+      #     tagName: app-v__VERSION__
+      #     releaseName: "App v__VERSION__"
+      #     releaseBody: "Vidu la resursojn por elŝuti kaj instali ĉi tiun version."
+      #     releaseDraft: true
+      #     prerelease: false
+      #     args: ${{ matrix.args }}
 
       # - name: Ruli sian propran skripton
       #  env:
