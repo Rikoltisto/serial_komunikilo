@@ -26,6 +26,7 @@ fn akiri_disponeblajn_seriaportojn() {
     println!("akiri_disponeblajn_seriaportojn");
 }
 
+//Kontroli Ĉu Estas Ĝisdatigoj Kaj Elŝuti Kaj Instali Ilin.
 async fn ĝisdatigi(aplikaĵo: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
     if let Some(ĝisdatigi) = aplikaĵo.updater()?.check().await? {
         let mut estas_elŝutita = 0;
