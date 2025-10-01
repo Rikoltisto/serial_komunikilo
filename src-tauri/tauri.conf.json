@@ -40,7 +40,7 @@
             "endpoints": [
                 "https://github.com/Rikoltisto/serial_komunikilo/releases/latest/download/latest.json"
             ],
-            "installMode": "basicUi"
+            "installMode": "passive"
         }
     }
 }
