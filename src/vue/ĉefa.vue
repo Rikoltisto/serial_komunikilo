@@ -7,33 +7,35 @@
             </select>
         </p>
     </div>
+    <el-button plain  @click="dialogVisible = true">
+        Click to open the Dialog
+    </el-button>
+    <el-dialog 
+    v-model="dialogVisible"
+    title="Tips"
+    width="500"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    :show-close="false"
+    >
+        <span>This is a message</span>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="dialogVisible = false">
+                    Confirm
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
+import { invoke } from "@tauri-apps/api/core";
 import { ref } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
 
-const count = ref(0)
+invoke('akiri_disponeblajn_seriaportojn');
 
-const greet = async () => {
-    try {
-        const result = await invoke('greet', { name: 'Vue User' })
-        console.log('Rust 响应:', result)
-    } catch (error) {
-        console.error('调用 Rust 失败:', error)
-    }
-}
+const dialogVisible = ref(false)
+
 </script>
-
-<style>
-.container {
-    padding: 20px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-}
-
-button {
-    margin: 5px;
-    padding: 10px 15px;
-}
-</style>
