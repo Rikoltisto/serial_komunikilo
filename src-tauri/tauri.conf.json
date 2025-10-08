@@ -32,7 +32,8 @@
             "icons/icon.icns",
             "icons/icon.ico"
         ],
-        "createUpdaterArtifacts": true
+        "createUpdaterArtifacts": true,
+        "publisher": "Ĵak Bel P."
     },
     "plugins": {
         "updater": {
