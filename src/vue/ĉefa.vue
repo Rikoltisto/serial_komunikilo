@@ -1,12 +1,4 @@
 <template>
-    <div class="ujo">
-        <p>
-            当前串口:
-            <select name="seriaj_havenoj">
-                <option>COM1</option>
-            </select>
-        </p>
-    </div>
     <el-dialog v-model="dialogo_videbla" title="检测到更新" width="500" :close-on-click-modal="false"
         :close-on-press-escape="false" :show-close="false">
         <span>
