@@ -31,16 +31,28 @@ pub struct ĜisdatigiMetadatumon {
     dato: String,
 }
 
-pub struct PritraktaĜisdatigo(Mutex<Option<Update>>);
+pub struct PritraktaĜisdatigo(pub Mutex<Option<Update>>);
 
 #[tauri::command]
 pub async fn kontroli_ĝisdatigojn(
     aplikaĵo: tauri::AppHandle,
     pritrakta_ĝisdatigo: State<'_, PritraktaĜisdatigo>,
 ) -> Rezulto<Option<ĜisdatigiMetadatumon>> {
-    *pritrakta_ĝisdatigo.0.lock().unwrap()  = aplikaĵo.updater()?.check().await?;
-
-    Ok(None)
+    //Akiri Ĝisdatigojn.
+    let ĝisdatigi = aplikaĵo.updater()?.check().await?;
+    //Generi Sisteman Ĝisdatigan Datumaron.
+    let ĝisdatigi_metadatumon = ĝisdatigi.as_ref().map(|ĝ|
+        ĜisdatigiMetadatumon {
+            versio: ĝ.version.clone(),
+            nuna_versio: ĝ.current_version.clone(),
+            notoj: ĝ.body.clone().unwrap(),
+            dato: ĝ.date.map(|d| d.to_string()).unwrap(),
+        }
+    );
+    //Enmeti Ĝisdatigon en la Statan Administradon.
+    *pritrakta_ĝisdatigo.0.lock().unwrap() = ĝisdatigi;
+    //Redoni Sisteman Ĝisdatigon.
+    Ok(ĝisdatigi_metadatumon)
 }
 
 #[tauri::command]
