@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Elpaki Deponejon
         uses: actions/checkout@v4
-      
+
       - name: Instali Rust-stabilan
         uses: dtolnay/rust-toolchain@stable
 
@@ -52,7 +52,7 @@ jobs:
         with:
           tagName: eldono-v__VERSION__
           releaseName: "Eldonaĵo v__VERSION__"
-          releaseBody: "Vidu la resursojn por elŝuti kaj instali ĉi tiun version."
+          releaseBodyFile: .github\workflows\markdown\eldona.md
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
