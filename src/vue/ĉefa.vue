@@ -108,8 +108,10 @@ pri_evento.onmessage = (mesaĝo) => {
       procentaĵo.value = Math.min(100, Number(((ĉunk_longo.value / enhava_longo.value) * 100).toFixed(1)));
       break;
     case "Finita":
-      dormi(3000);
-      restartigi();
+      if (procentaĵo.value === 100) {
+        dormi(3000);
+        restartigi();
+      }
       break;
   }
 };
