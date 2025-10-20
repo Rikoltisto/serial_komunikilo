@@ -1,6 +1,6 @@
 use serde::Serialize;
-use std::sync::Mutex;
-use tauri::State;
+use std::{sync::Mutex};
+use tauri::{ipc::Channel, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
 //Redoni Rezultan Alinomon.
@@ -15,7 +15,7 @@ pub enum Eraro {
     NeniuPritraktaĜisdatigo,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Serialize)]
 #[serde(tag = "evento", content = "datumo")]
 pub enum ElŝutaEvento {
     Komencita { enhava_longo: Option<u64> },
@@ -55,33 +55,34 @@ pub async fn kontroli_ĝisdatigojn(
     Ok(ĝisdatigi_metadatumon)
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn elŝuti_kaj_ĝisdatigi(
-    aplikaĵo: tauri::AppHandle,
-) -> tauri_plugin_updater::Result<()> {
-    let mut estas_elŝutita = 0;
+    pritrakta_ĝisdatigo: State<'_, PritraktaĜisdatigo>,
+    pri_evento: Channel<ElŝutaEvento>,
+) -> Rezulto<()> {
+    //Kontroli Ĉu Ĝisdatigo Ekzistas.
+    let Some(ĝisdatigi) = pritrakta_ĝisdatigo.0.lock().unwrap().take() else {
+        return Err(Eraro::NeniuPritraktaĜisdatigo);
+    };
 
-    aplikaĵo
-        .updater()?
-        .check()
-        .await?
-        .unwrap()
+    let mut komencita = false;
+
+    ĝisdatigi
         .download_and_install(
             |ĉunk_longo, enhava_longo| {
-                estas_elŝutita += ĉunk_longo;
+                //Sendi Unufoje Elŝutkomencon.
+                if !komencita {
+                    pri_evento.send(ElŝutaEvento::Komencita { enhava_longo }).unwrap();
+                    komencita = true;
+                }
+
+                pri_evento.send(ElŝutaEvento::Progreso { ĉunk_longo }).unwrap();
             },
-            || {},
+            || {
+                pri_evento.send(ElŝutaEvento::Finita).unwrap();
+            }
         )
         .await?;
 
-    aplikaĵo.restart();
-}
-
-async fn akiri_versian_informon(ĝisdatigi: Update) -> ĜisdatigiMetadatumon {
-    ĜisdatigiMetadatumon {
-        versio: ĝisdatigi.version,
-        nuna_versio: ĝisdatigi.current_version,
-        notoj: ĝisdatigi.body.unwrap(),
-        dato: ĝisdatigi.date.map(|d| d.to_string()).unwrap(),
-    }
+    Ok(())
 }
