@@ -78,11 +78,11 @@ pub async fn elŝuti_kaj_ĝisdatigi(
 
                 pri_evento.send(ElŝutaEvento::Progreso { ĉunk_longo }).unwrap();
             },
-            || {
-                pri_evento.send(ElŝutaEvento::Finita).unwrap();
-            }
+            || {}
         )
         .await?;
+
+    pri_evento.send(ElŝutaEvento::Finita).unwrap();
 
     Ok(())
 }
