@@ -1,5 +1,5 @@
 use serde::Serialize;
-use std::{sync::Mutex};
+use std::{sync::Mutex, time::{Instant, Duration}};
 use tauri::{ipc::Channel, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
@@ -19,7 +19,7 @@ pub enum Eraro {
 #[serde(tag = "evento", content = "datumo")]
 pub enum ElŝutaEvento {
     Komencita { enhava_longo: Option<u64> },
-    Progreso { elŝutita: usize },
+    Progreso { ĉunk_longo: usize },
     Finita,
 }
 
@@ -66,7 +66,8 @@ pub async fn elŝuti_kaj_ĝisdatigi(
     };
 
     let mut komencita = false;
-    let mut elŝutita = 0;
+    let mut lasta_ĝisdatigo = Instant::now();
+    let mut ĝisdatiga_intervalo = Duration::from_millis(100);
 
     ĝisdatigi
         .download_and_install(
@@ -77,8 +78,10 @@ pub async fn elŝuti_kaj_ĝisdatigi(
                     komencita = true;
                 }
 
-                elŝutita += ĉunk_longo;
-                pri_evento.send(ElŝutaEvento::Progreso { elŝutita }).unwrap();
+                if lasta_ĝisdatigo.elapsed() >= ĝisdatiga_intervalo {
+                    pri_evento.send(ElŝutaEvento::Progreso { ĉunk_longo }).unwrap();
+                    lasta_ĝisdatigo = Instant::now();
+                }
             },
             || {}
         )

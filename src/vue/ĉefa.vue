@@ -76,7 +76,7 @@ type ElŝutaEvento =
   | {
       evento: "Progreso";
       datumo: {
-        elŝutita: number;
+        ĉunk_longo: number;
       };
     }
   | {
@@ -88,6 +88,7 @@ let dialogo_mesaĝo_videblas = ref(false);
 let ĝisdatiga_dialogo_videblas = ref(false);
 let ĝisdatiga_informo = ref<VersiaInformo>();
 let pri_evento = new Channel<ElŝutaEvento>();
+let elŝutita = ref<number>(0);
 let enhava_longo = ref<number>(0);
 let procentaĵo = ref<number>();
 
@@ -103,7 +104,8 @@ pri_evento.onmessage = (mesaĝo) => {
       enhava_longo.value = mesaĝo.datumo.enhava_longo;
       break;
     case "Progreso":
-      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.elŝutita / enhava_longo.value) * 100).toFixed(1)));
+      elŝutita.value += mesaĝo.datumo.ĉunk_longo;
+      procentaĵo.value = Math.min(100, Number(((elŝutita.value / enhava_longo.value) * 100).toFixed(1)));
       break;
     case "Finita":
       dormi(3000);
