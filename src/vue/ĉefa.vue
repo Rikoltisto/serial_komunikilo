@@ -76,7 +76,7 @@ type ElŝutaEvento =
   | {
       evento: "Progreso";
       datumo: {
-        ĉunk_longo: number;
+        elŝutita: number;
       };
     }
   | {
@@ -103,7 +103,7 @@ pri_evento.onmessage = (mesaĝo) => {
       enhava_longo.value = mesaĝo.datumo.enhava_longo;
       break;
     case "Progreso":
-      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.ĉunk_longo / enhava_longo.value) * 100).toFixed(1)));
+      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.elŝutita / enhava_longo.value) * 100).toFixed(1)));
       break;
     case "Finita":
       dormi(3000);
