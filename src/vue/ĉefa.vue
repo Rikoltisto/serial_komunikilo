@@ -76,7 +76,7 @@ type ElŝutaEvento =
   | {
       evento: "Progreso";
       datumo: {
-        ĉunk_longo: number;
+        elŝutita: number;
       };
     }
   | {
@@ -88,11 +88,10 @@ let dialogo_mesaĝo_videblas = ref(false);
 let ĝisdatiga_dialogo_videblas = ref(false);
 let ĝisdatiga_informo = ref<VersiaInformo>();
 let pri_evento = new Channel<ElŝutaEvento>();
-let elŝutita = ref<number>(0);
 let enhava_longo = ref<number>(0);
 let procentaĵo = ref<number>();
 
-onMounted(() => {
+onMounted(async() => {
   kontroli_ĝisdatigojn();
 });
 
@@ -104,11 +103,11 @@ pri_evento.onmessage = async (mesaĝo) => {
       enhava_longo.value = mesaĝo.datumo.enhava_longo;
       break;
     case "Progreso":
-      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.ĉunk_longo / enhava_longo.value) * 100).toFixed(1)));
+      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.elŝutita / enhava_longo.value) * 100).toFixed(1)));
       break;
     case "Finita":
       procentaĵo.value = 100;
-      await dormi(3000);
+      await dormi(5000);
       restartigi();
       break;
   }
