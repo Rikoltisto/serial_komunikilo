@@ -66,6 +66,7 @@ pub async fn elŝuti_kaj_ĝisdatigi(
     };
 
     let mut komencita = false;
+    let mut elŝutita = 0;
 
     ĝisdatigi
         .download_and_install(
@@ -76,7 +77,8 @@ pub async fn elŝuti_kaj_ĝisdatigi(
                     komencita = true;
                 }
 
-                pri_evento.send(ElŝutaEvento::Progreso { ĉunk_longo }).unwrap();
+                elŝutita += ĉunk_longo;
+                pri_evento.send(ElŝutaEvento::Progreso { ĉunk_longo: elŝutita }).unwrap();
             },
             || {}
         )

@@ -104,8 +104,7 @@ pri_evento.onmessage = (mesaĝo) => {
       enhava_longo.value = mesaĝo.datumo.enhava_longo;
       break;
     case "Progreso":
-      elŝutita.value += mesaĝo.datumo.ĉunk_longo;
-      procentaĵo.value = Math.min(100, Number(((elŝutita.value / enhava_longo.value) * 100).toFixed(1)));
+      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.ĉunk_longo / enhava_longo.value) * 100).toFixed(1)));
       break;
     case "Finita":
       procentaĵo.value = 100;
