@@ -19,7 +19,7 @@ pub enum Eraro {
 #[serde(tag = "evento", content = "datumo")]
 pub enum ElŝutaEvento {
     Komencita { enhava_longo: Option<u64> },
-    Progreso { ĉunk_longo: usize },
+    Progreso { elŝutita: usize },
     Finita,
 }
 
@@ -78,7 +78,7 @@ pub async fn elŝuti_kaj_ĝisdatigi(
                 }
 
                 elŝutita += ĉunk_longo;
-                pri_evento.send(ElŝutaEvento::Progreso { ĉunk_longo: elŝutita }).unwrap();
+                pri_evento.send(ElŝutaEvento::Progreso { elŝutita }).unwrap();
             },
             || {}
         )
