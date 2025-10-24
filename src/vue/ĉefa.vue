@@ -96,7 +96,7 @@ onMounted(() => {
   kontroli_ĝisdatigojn();
 });
 
-pri_evento.onmessage = (mesaĝo) => {
+pri_evento.onmessage = async (mesaĝo) => {
   switch (mesaĝo.evento) {
     case "Komencita":
       dialogo_mesaĝo_videblas.value = false;
@@ -108,9 +108,8 @@ pri_evento.onmessage = (mesaĝo) => {
       break;
     case "Finita":
       procentaĵo.value = 100;
-      dormi(3000).then(() => {
-        restartigi();
-      });
+      await dormi(3000);
+      restartigi();
       break;
   }
 };
