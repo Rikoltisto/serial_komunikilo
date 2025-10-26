@@ -113,7 +113,6 @@ pri_evento.onmessage = async (mesaĝo) => {
       );
       break;
     case "Finita":
-      procentaĵo.value = 100;
       await dormi(3000);
       instali();
       break;
