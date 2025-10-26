@@ -119,13 +119,12 @@ pri_evento.onmessage = async (mesaĝo) => {
   }
 };
 
-function kontroli_ĝisdatigojn() {
-  invoke("kontroli_ĝisdatigojn").then((rezulto) => {
-    if (rezulto != null) {
-      ĝisdatiga_informo.value = konverti_tempon(rezulto as VersiaInformo);
-      dialogo_mesaĝo_videblas.value = true;
-    }
-  });
+async function kontroli_ĝisdatigojn() {
+  let rezulto = await invoke("kontroli_ĝisdatigojn");
+  if (rezulto != null) {
+    ĝisdatiga_informo.value = konverti_tempon(rezulto as VersiaInformo);
+    dialogo_mesaĝo_videblas.value = true;
+  }
 }
 
 function konverti_tempon(ĝisdatiga_informo: VersiaInformo): VersiaInformo {
