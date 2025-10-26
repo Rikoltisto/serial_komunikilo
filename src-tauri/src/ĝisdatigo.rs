@@ -1,6 +1,10 @@
 use serde::Serialize;
 use std::{
-    env, fs::{self, File}, io::Write, process::Command, sync::Mutex
+    env,
+    fs::{self, File},
+    io::Write,
+    process::Command,
+    sync::Mutex,
 };
 use tauri::{ipc::Channel, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
@@ -110,13 +114,15 @@ pub async fn elŝuti(
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn instali(dosiera_vojo: String) -> Rezulto<()> {
+pub async fn instali(
+    aplikaĵo: tauri::AppHandle,
+    dosiera_vojo: String
+) -> Rezulto<()> {
     Command::new(&dosiera_vojo)
         .args(&["/S", "/quiet"])
         .status()
         .unwrap();
-
-    fs::remove_file(&dosiera_vojo);
-
-    Ok(())
+    //Forigi la instalan dosieron.
+    fs::remove_file(&dosiera_vojo).unwrap();
+    aplikaĵo.restart();
 }

@@ -16,7 +16,6 @@ pub fn run() {
             ĝisdatigo::elŝuti,
             ĝisdatigo::instali,
             komandoj::eliri,
-            komandoj::restartigi,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
