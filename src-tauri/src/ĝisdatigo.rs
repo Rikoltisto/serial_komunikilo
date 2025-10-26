@@ -1,5 +1,7 @@
 use serde::Serialize;
-use std::{sync::Mutex};
+use std::{
+    env, fs::{self, File}, io::Write, process::Command, sync::Mutex
+};
 use tauri::{ipc::Channel, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
@@ -41,14 +43,12 @@ pub async fn kontroli_ĝisdatigojn(
     //Akiri Ĝisdatigojn.
     let ĝisdatigi = aplikaĵo.updater()?.check().await?;
     //Generi Sisteman Ĝisdatigan Datumaron.
-    let ĝisdatigi_metadatumon = ĝisdatigi.as_ref().map(|ĝ|
-        ĜisdatigiMetadatumon {
-            versio: ĝ.version.clone(),
-            nuna_versio: ĝ.current_version.clone(),
-            notoj: ĝ.body.clone().unwrap(),
-            dato: ĝ.date.map(|d| d.to_string()).unwrap(),
-        }
-    );
+    let ĝisdatigi_metadatumon = ĝisdatigi.as_ref().map(|ĝ| ĜisdatigiMetadatumon {
+        versio: ĝ.version.clone(),
+        nuna_versio: ĝ.current_version.clone(),
+        notoj: ĝ.body.clone().unwrap(),
+        dato: ĝ.date.map(|d| d.to_string()).unwrap(),
+    });
     //Enmeti Ĝisdatigon en la Statan Administradon.
     *pritrakta_ĝisdatigo.0.lock().unwrap() = ĝisdatigi;
     //Redoni Sisteman Ĝisdatigon.
@@ -56,10 +56,10 @@ pub async fn kontroli_ĝisdatigojn(
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn elŝuti_kaj_ĝisdatigi(
+pub async fn elŝuti(
     pritrakta_ĝisdatigo: State<'_, PritraktaĜisdatigo>,
     pri_evento: Channel<ElŝutaEvento>,
-) -> Rezulto<()> {
+) -> Rezulto<String> {
     //Kontroli Ĉu Ĝisdatigo Ekzistas.
     let Some(ĝisdatigi) = pritrakta_ĝisdatigo.0.lock().unwrap().take() else {
         return Err(Eraro::NeniuPritraktaĜisdatigo);
@@ -68,23 +68,53 @@ pub async fn elŝuti_kaj_ĝisdatigi(
     let mut komencita = false;
     let mut elŝutita = 0;
 
-    ĝisdatigi
-        .download_and_install(
+    let dosieraj_datumoj = ĝisdatigi
+        .download(
             |ĉunk_longo, enhava_longo| {
                 //Sendi Unufoje Elŝutkomencon.
                 if !komencita {
-                    pri_evento.send(ElŝutaEvento::Komencita { enhava_longo }).unwrap();
+                    pri_evento
+                        .send(ElŝutaEvento::Komencita { enhava_longo })
+                        .unwrap();
                     komencita = true;
                 }
 
                 elŝutita += ĉunk_longo;
-                pri_evento.send(ElŝutaEvento::Progreso { elŝutita }).unwrap();
+                pri_evento
+                    .send(ElŝutaEvento::Progreso { elŝutita })
+                    .unwrap();
             },
-            || {}
+            || {
+                pri_evento.send(ElŝutaEvento::Finita).unwrap();
+            },
         )
         .await?;
+    //Akiri la nunan lokon de la exe-dosiero.
+    let nuna_plenumebla = env::current_exe();
+    //Akiri la instaladan dosierujon de la programo kaj krei provizoran dosierujon 'provizora'.
+    let aplikaĵa_dosierujo = nuna_plenumebla.unwrap().parent().unwrap().join("provizora");
+    //Krei dosierujon.
+    fs::create_dir_all(&aplikaĵa_dosierujo).unwrap();
+    //Krei la plenan vojon.
+    let dosiera_vojo = &aplikaĵa_dosierujo.join(
+        ĝisdatigi
+            .download_url
+            .path_segments()
+            .and_then(|segmentoj| segmentoj.last())
+            .unwrap(),
+    );
+    //Konservi dosieron.
+    let mut dosiero = File::create(dosiera_vojo).unwrap();
+    dosiero.write_all(&dosieraj_datumoj).unwrap();
+    Ok(dosiera_vojo.to_string_lossy().to_string())
+}
 
-    pri_evento.send(ElŝutaEvento::Finita).unwrap();
+#[tauri::command]
+pub async fn instali(dosiera_vojo: String) -> Rezulto<()> {
+    Command::new(&dosiera_vojo)
+        .args(&["/S", "/quiet"])
+        .status()
+        .unwrap();
 
     Ok(())
 }

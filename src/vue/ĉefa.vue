@@ -24,7 +24,7 @@
     <template #footer>
       <div>
         <el-button type="danger" @click="eliri">退出</el-button>
-        <el-button type="success" @click="elŝuti_kaj_ĝisdatigi">更新</el-button>
+        <el-button type="success" @click="elŝuti">更新</el-button>
       </div>
     </template>
   </el-dialog>
@@ -38,11 +38,12 @@
   >
     <span>
       <el-text class="mx-1" type="info"
-        >版本变更: {{ ĝisdatiga_informo?.nuna_versio }}&nbsp;&nbsp;>&nbsp;&nbsp;{{ ĝisdatiga_informo?.versio }}</el-text
+        >版本变更:
+        {{ ĝisdatiga_informo?.nuna_versio }}&nbsp;&nbsp;>&nbsp;&nbsp;{{
+          ĝisdatiga_informo?.versio
+        }}</el-text
       ><br />
-      <el-text class="mx-1" type="info"
-        >下载进度: </el-text
-      >
+      <el-text class="mx-1" type="info">下载进度: </el-text>
       <el-progress
         :percentage="procentaĵo"
         :stroke-width="15"
@@ -90,8 +91,9 @@ let ĝisdatiga_informo = ref<VersiaInformo>();
 let pri_evento = new Channel<ElŝutaEvento>();
 let enhava_longo = ref<number>(0);
 let procentaĵo = ref<number>();
+let dosiera_vojo = ref<string>();
 
-onMounted(async() => {
+onMounted(async () => {
   kontroli_ĝisdatigojn();
 });
 
@@ -103,12 +105,17 @@ pri_evento.onmessage = async (mesaĝo) => {
       enhava_longo.value = mesaĝo.datumo.enhava_longo;
       break;
     case "Progreso":
-      procentaĵo.value = Math.min(100, Number(((mesaĝo.datumo.elŝutita / enhava_longo.value) * 100).toFixed(1)));
+      procentaĵo.value = Math.min(
+        100,
+        Number(
+          ((mesaĝo.datumo.elŝutita / enhava_longo.value) * 100).toFixed(1),
+        ),
+      );
       break;
     case "Finita":
       procentaĵo.value = 100;
-      await dormi(5000);
-      restartigi();
+      await dormi(3000);
+      instali();
       break;
   }
 };
@@ -133,19 +140,23 @@ function konverti_tempon(ĝisdatiga_informo: VersiaInformo): VersiaInformo {
   return ĝisdatiga_informo;
 }
 
-function elŝuti_kaj_ĝisdatigi() {
-  invoke("elŝuti_kaj_ĝisdatigi", { pri_evento });
+async function elŝuti() {
+  dosiera_vojo.value = await invoke("elŝuti", { pri_evento });
 }
 
 function eliri() {
   invoke("eliri");
 }
 
-function restartigi() {
-  invoke("restartigi");
-}
+// function restartigi() {
+//   invoke("restartigi");
+// }
 
 function dormi(milisekundoj: number): Promise<void> {
   return new Promise((solvi) => setTimeout(solvi, milisekundoj));
+}
+
+async function instali() {
+  await invoke("instali", { dosiera_vojo });
 }
 </script>

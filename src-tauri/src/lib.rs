@@ -13,7 +13,8 @@ pub fn run() {
         .manage(ĝisdatigo::PritraktaĜisdatigo(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![
             ĝisdatigo::kontroli_ĝisdatigojn,
-            ĝisdatigo::elŝuti_kaj_ĝisdatigi,
+            ĝisdatigo::elŝuti,
+            ĝisdatigo::instali,
             komandoj::eliri,
             komandoj::restartigi,
         ])
