@@ -116,5 +116,7 @@ pub async fn instali(dosiera_vojo: String) -> Rezulto<()> {
         .status()
         .unwrap();
 
+    fs::remove_file(&dosiera_vojo);
+
     Ok(())
 }
