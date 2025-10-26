@@ -91,7 +91,7 @@ let ĝisdatiga_informo = ref<VersiaInformo>();
 let pri_evento = new Channel<ElŝutaEvento>();
 let enhava_longo = ref<number>(0);
 let procentaĵo = ref<number>();
-let dosiera_vojo = ref<string>();
+let dosiera_vojo = ref<string>("");
 
 onMounted(async () => {
   kontroli_ĝisdatigojn();
@@ -157,6 +157,6 @@ function dormi(milisekundoj: number): Promise<void> {
 }
 
 async function instali() {
-  await invoke("instali", { dosiera_vojo });
+  await invoke("instali", { dosiera_vojo: dosiera_vojo.value });
 }
 </script>

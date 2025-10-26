@@ -109,7 +109,7 @@ pub async fn elŝuti(
     Ok(dosiera_vojo.to_string_lossy().to_string())
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn instali(dosiera_vojo: String) -> Rezulto<()> {
     Command::new(&dosiera_vojo)
         .args(&["/S", "/quiet"])
