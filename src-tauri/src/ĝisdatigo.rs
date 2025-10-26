@@ -4,7 +4,7 @@ use std::{
     fs::{self, File},
     io::Write,
     process::Command,
-    sync::Mutex,
+    sync::Mutex, thread, time::Duration,
 };
 use tauri::{ipc::Channel, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
@@ -120,9 +120,10 @@ pub async fn instali(
 ) -> Rezulto<()> {
     Command::new(&dosiera_vojo)
         .args(&["/S", "/quiet"])
-        .status()
+        .spawn()
         .unwrap();
     //Forigi la instalan dosieron.
+    thread::sleep(Duration::from_secs(5));
     fs::remove_file(&dosiera_vojo).unwrap();
     aplikaĵo.restart();
 }
