@@ -18,7 +18,7 @@
         >更新日期: {{ ĝisdatiga_informo?.dato }}</el-text
       ><br />
       <el-text class="mx-1" type="info"
-        >更新说明:
+        >更新日志:
         <span>
           <el-button type="primary" link>点击查看</el-button>
         </span></el-text
@@ -55,6 +55,66 @@
         striped-flow
         :duration="10"
       />
+    </span>
+  </el-dialog>
+  <el-dialog
+    v-model="ĝisdatiga_ĵurnala_videbleco"
+    title="更新日志"
+    width="500"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+  >
+    <span>
+      <el-scrollbar max-height="350px">
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+        <p class="scrollbar-demo-item">
+          1
+        </p>
+      </el-scrollbar>
     </span>
   </el-dialog>
 </template>
@@ -95,6 +155,7 @@ let pri_evento = new Channel<ElŝutaEvento>();
 let enhava_longo = ref<number>(0);
 let procentaĵo = ref<number>();
 let dosiera_vojo = ref<string>("");
+let ĝisdatiga_ĵurnala_videbleco = ref(true);
 
 onMounted(async () => {
   kontroli_ĝisdatigojn();
