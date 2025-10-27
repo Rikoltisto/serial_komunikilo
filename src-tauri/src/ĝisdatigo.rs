@@ -126,9 +126,9 @@ pub async fn instali(
             "Write-Host 'Komenci instaladon...'; \
             5..1 | % {{ Write-Host \"`$_...\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}' -ArgumentList '/S','/quiet' -Wait; \
-            Write-Host '安装完成，删除安装包...'; \
+            Write-Host 'Instalado kompletigita, forigu la instalpakaĵon...'; \
             Remove-Item '{}'; \
-            Write-Host '安装包已删除，启动新版本...'; \
+            Write-Host 'Instalpakaĵo estas forigita, startigu la novan version...'; \
             3..1 | % {{ Write-Host \"`$_...\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}'; \
             Write-Host '所有操作完成'",
