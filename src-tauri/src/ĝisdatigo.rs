@@ -131,7 +131,9 @@ pub async fn instali(
             Write-Host 'Instalpakaĵo estas forigita, startigu la novan version...'; \
             3..1 | % {{ Write-Host \"`$_...\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}'; \
-            Write-Host '所有操作完成'",
+            Write-Host 'Ĉiuj operacioj kompletigitaj...'
+            Start-Sleep -Seconds 2; \
+            exit",
             dosiera_vojo,
             dosiera_vojo,
             nuna_plenumebla.to_string_lossy().to_string(),
