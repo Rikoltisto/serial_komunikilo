@@ -18,7 +18,10 @@
         >更新日期: {{ ĝisdatiga_informo?.dato }}</el-text
       ><br />
       <el-text class="mx-1" type="info"
-        >更新说明: {{ ĝisdatiga_informo?.notoj }}</el-text
+        >更新说明:
+        <span>
+          <el-button type="primary" link>点击查看</el-button>
+        </span></el-text
       >
     </span>
     <template #footer>
@@ -123,7 +126,7 @@ async function kontroli_ĝisdatigojn() {
   let rezulto = await invoke("kontroli_ĝisdatigojn");
   if (rezulto != null) {
     ĝisdatiga_informo.value = konverti_tempon(rezulto as VersiaInformo);
-    dialogo_mesaĝo_videblas.value = true
+    dialogo_mesaĝo_videblas.value = true;
   }
 }
 
