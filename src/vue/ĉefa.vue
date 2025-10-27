@@ -123,7 +123,7 @@ async function kontroli_ĝisdatigojn() {
   let rezulto = await invoke("kontroli_ĝisdatigojn");
   if (rezulto != null) {
     ĝisdatiga_informo.value = konverti_tempon(rezulto as VersiaInformo);
-    dialogo_mesaĝo_videblas.value = true;
+    dialogo_mesaĝo_videblas.value = true
   }
 }
 

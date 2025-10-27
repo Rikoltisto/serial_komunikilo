@@ -4,7 +4,7 @@ use std::{
     fs::{self, File},
     io::Write,
     process::Command,
-    sync::Mutex, thread, time::Duration,
+    sync::Mutex,
 };
 use tauri::{ipc::Channel, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
@@ -118,12 +118,27 @@ pub async fn instali(
     aplikaĵo: tauri::AppHandle,
     dosiera_vojo: String
 ) -> Rezulto<()> {
-    Command::new(&dosiera_vojo)
-        .args(&["/S", "/quiet"])
+    //Akiri la nunan lokon de la exe-dosiero.
+    let nuna_plenumebla = env::current_exe().unwrap();
+
+    Command::new("powershell")
+        .args(&["-Command", &format!(
+            "Write-Host 'Komenci instaladon...'; \
+            5..1 | % {{ Write-Host \"`$_...\"; Start-Sleep -Seconds 1 }}; \
+            Start-Process '{}' -ArgumentList '/S','/quiet' -Wait; \
+            Write-Host '安装完成，删除安装包...'; \
+            Remove-Item '{}'; \
+            Write-Host '安装包已删除，启动新版本...'; \
+            3..1 | % {{ Write-Host \"`$_...\"; Start-Sleep -Seconds 1 }}; \
+            Start-Process '{}'; \
+            Write-Host '所有操作完成'",
+            dosiera_vojo,
+            dosiera_vojo,
+            nuna_plenumebla.to_string_lossy().to_string(),
+        )])
         .spawn()
         .unwrap();
+
     //Forigi la instalan dosieron.
-    thread::sleep(Duration::from_secs(5));
-    fs::remove_file(&dosiera_vojo).unwrap();
     aplikaĵo.restart();
 }
