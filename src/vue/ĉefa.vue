@@ -20,7 +20,7 @@
       <el-text class="mx-1" type="info"
         >更新日志:
         <span>
-          <el-button type="primary" link>点击查看</el-button>
+          <el-button type="primary" @click="ĝisdatiga_ĵurnala_videbleco = true">点击查看</el-button>
         </span></el-text
       >
     </span>
