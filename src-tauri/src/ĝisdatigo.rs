@@ -124,12 +124,12 @@ pub async fn instali(
     Command::new("powershell")
         .args(&["-Command", &format!(
             "Write-Host 'Komenci instaladon...'; \
-            5..1 | % {{ Write-Host \"`$_{{}}...\"; Start-Sleep -Seconds 1 }}; \
+            5..1 | % {{ Write-Host \"`$($_)...\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}' -ArgumentList '/S','/quiet' -Wait; \
             Write-Host 'Instalado kompletigita, forigu la instalpakaĵon...'; \
             Remove-Item '{}'; \
             Write-Host 'Instalpakaĵo estas forigita, startigu la novan version...'; \
-            3..1 | % {{ Write-Host \"`$_{{}}...\"; Start-Sleep -Seconds 1 }}; \
+            3..1 | % {{ Write-Host \"`$($_)...\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}'; \
             Write-Host 'Ĉiuj operacioj kompletigitaj...'
             Start-Sleep -Seconds 2; \
