@@ -114,30 +114,30 @@ pub async fn elŝuti(
 }
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn instali(
-    aplikaĵo: tauri::AppHandle,
-    dosiera_vojo: String
-) -> Rezulto<()> {
+pub async fn instali(aplikaĵo: tauri::AppHandle, dosiera_vojo: String) -> Rezulto<()> {
     //Akiri la nunan lokon de la exe-dosiero.
     let nuna_plenumebla = env::current_exe().unwrap();
 
     Command::new("powershell")
-        .args(&["-Command", &format!(
-            "Write-Host 'Komenci instaladon...'; \
-            5..1 | % {{ Write-Host \"$_...\"; Start-Sleep -Seconds 1 }}; \
+        .args(&[
+            "-Command",
+            &format!(
+                "Write-Host 'Komenci instaladon...'; \
+            5..1 | % {{ Write-Host \"$_\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}' -ArgumentList '/S','/quiet' -Wait; \
             Write-Host 'Instalado kompletigita, forigu la instalpakaĵon...'; \
             Remove-Item '{}'; \
             Write-Host 'Instalpakaĵo estas forigita, startigu la novan version...'; \
-            3..1 | % {{ Write-Host \"$_...\"; Start-Sleep -Seconds 1 }}; \
+            3..1 | % {{ Write-Host \"$_\"; Start-Sleep -Seconds 1 }}; \
             Start-Process '{}'; \
             Write-Host 'Ĉiuj operacioj kompletigitaj...'
             Start-Sleep -Seconds 2; \
             exit",
-            dosiera_vojo,
-            dosiera_vojo,
-            nuna_plenumebla.to_string_lossy().to_string(),
-        )])
+                dosiera_vojo,
+                dosiera_vojo,
+                nuna_plenumebla.to_string_lossy().to_string(),
+            ),
+        ])
         .spawn()
         .unwrap();
 
