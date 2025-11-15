@@ -1,28 +1,14 @@
 <template>
-  <el-dialog
-    v-model="dialogo_mesaĝo_videblas"
-    title="检测到更新"
-    width="500"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-    :show-close="false"
-  >
+  <el-dialog v-model="dialogo_mesaĝo_videblas" title="检测到更新" width="500" :close-on-click-modal="false"
+    :close-on-press-escape="false" :show-close="false">
     <span>
-      <el-text class="mx-1" type="info"
-        >当前版本: {{ ĝisdatiga_informo?.nuna_versio }}</el-text
-      ><br />
-      <el-text class="mx-1" type="success"
-        >最新版本: {{ ĝisdatiga_informo?.versio }}</el-text
-      ><br />
-      <el-text class="mx-1" type="info"
-        >更新日期: {{ ĝisdatiga_informo?.dato }}</el-text
-      ><br />
-      <el-text class="mx-1" type="info"
-        >更新日志:
+      <el-text class="mx-1" type="info">当前版本: {{ ĝisdatiga_informo?.nuna_versio }}</el-text><br />
+      <el-text class="mx-1" type="success">最新版本: {{ ĝisdatiga_informo?.versio }}</el-text><br />
+      <el-text class="mx-1" type="info">更新日期: {{ ĝisdatiga_informo?.dato }}</el-text><br />
+      <el-text class="mx-1" type="info">更新日志:
         <span>
-          <el-button type="primary" @click="ĝisdatiga_ĵurnala_videbleco = true">点击查看</el-button>
-        </span></el-text
-      >
+          <el-button type="primary" @click="ĝisdatiga_ĵurnala_videbleco = true" link>点击查看</el-button>
+        </span></el-text>
     </span>
     <template #footer>
       <div>
@@ -31,39 +17,20 @@
       </div>
     </template>
   </el-dialog>
-  <el-dialog
-    v-model="ĝisdatiga_dialogo_videblas"
-    title="正在更新中"
-    width="500"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-    :show-close="false"
-  >
+  <el-dialog v-model="ĝisdatiga_dialogo_videblas" title="正在更新中" width="500" :close-on-click-modal="false"
+    :close-on-press-escape="false" :show-close="false">
     <span>
-      <el-text class="mx-1" type="info"
-        >版本变更:
+      <el-text class="mx-1" type="info">版本变更:
         {{ ĝisdatiga_informo?.nuna_versio }}&nbsp;&nbsp;>&nbsp;&nbsp;{{
           ĝisdatiga_informo?.versio
-        }}</el-text
-      ><br />
+        }}</el-text><br />
       <el-text class="mx-1" type="info">下载进度: </el-text>
-      <el-progress
-        :percentage="procentaĵo"
-        :stroke-width="15"
-        :status="procentaĵo === 100 ? 'success' : undefined"
-        striped
-        striped-flow
-        :duration="10"
-      />
+      <el-progress :percentage="procentaĵo" :stroke-width="15" :status="procentaĵo === 100 ? 'success' : undefined"
+        striped striped-flow :duration="10" />
     </span>
   </el-dialog>
-  <el-dialog
-    v-model="ĝisdatiga_ĵurnala_videbleco"
-    title="更新日志"
-    width="500"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-  >
+  <el-dialog v-model="ĝisdatiga_ĵurnala_videbleco" title="更新日志" width="500" :close-on-click-modal="false"
+    :close-on-press-escape="false">
     <span>
       <el-scrollbar max-height="350px">
         <p class="scrollbar-demo-item">
@@ -132,21 +99,21 @@ interface VersiaInformo {
 
 type ElŝutaEvento =
   | {
-      evento: "Komencita";
-      datumo: {
-        enhava_longo: number;
-      };
-    }
-  | {
-      evento: "Progreso";
-      datumo: {
-        elŝutita: number;
-      };
-    }
-  | {
-      evento: "Finita";
-      datumo: null;
+    evento: "Komencita";
+    datumo: {
+      enhava_longo: number;
     };
+  }
+  | {
+    evento: "Progreso";
+    datumo: {
+      elŝutita: number;
+    };
+  }
+  | {
+    evento: "Finita";
+    datumo: null;
+  };
 
 let dialogo_mesaĝo_videblas = ref(false);
 let ĝisdatiga_dialogo_videblas = ref(false);
