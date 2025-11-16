@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+    --el-color-primary: #4f46e5;
+    --el-color-success: #10B981;
+    --el-color-danger: #EF4444;
+}
+
+.el-form-item__label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.receive-textarea-custom {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    background-color: #f7f9fb;
+    border-radius: 0.75rem;
+}
+
+.receive-textarea-custom textarea {
+    height: 100% !important;
+    resize: none;
+    background-color: #f7f9fb !important;
+    color: #1f2937;
+    padding: 1rem;
+}
+
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
+}
+
+#app {
+    min-height: 100vh;
+}
