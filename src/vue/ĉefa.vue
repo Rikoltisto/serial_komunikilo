@@ -131,19 +131,19 @@
                 {{ ĝisdatiga_informo?.dato }}
               </span>
             </div>
-            <el-text tag="p" type="info"
-              class="flex items-center justify-between !mt-4 p-3 rounded-xl bg-blue-50/70 border-l-4 border-blue-500">
+            <div
+              class="flex items-center justify-between mt-4 p-3 rounded-xl bg-blue-50/70 border-l-4 border-blue-500 transition-all hover:shadow-sm">
               <span class="flex items-center space-x-2 text-blue-800">
-                <el-icon :size="18">
-                  <Tickets />
+                <el-icon :size="18" class="flex-shrink-0">
+                  <Ticket />
                 </el-icon>
-                <span class="font-semibold">更新日志：</span>
+                <span class="font-semibold tracking-wide">更新日志：</span>
               </span>
-              <el-button type="primary" @click="ĝisdatiga_ĵurnala_videbleco = true" link
-                class="font-bold hover:underline text-blue-600">
+              <el-button type="primary" link @click="ĝisdatiga_ĵurnala_videbleco = true"
+                class="!font-bold hover:!underline !text-blue-600">
                 点击查看详细变更
               </el-button>
-            </el-text>
+            </div>
           </div>
         </div>
         <template #footer>
@@ -165,8 +165,9 @@
             版本变更：
             <span class="font-bold text-indigo-600 ml-1">{{ ĝisdatiga_informo?.nuna_versio }} → {{
               ĝisdatiga_informo?.versio
-            }}</span>
+              }}</span>
           </el-text>
+          <br />
           <el-text type="info" class="text-sm block mb-2">
             下载进度：
           </el-text>
@@ -204,7 +205,7 @@
 <script setup lang="ts">
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { onMounted, reactive, ref } from "vue";
-import { Refresh, Delete, Position, Setting, CircleCloseFilled, CircleCheckFilled, Tickets } from "@element-plus/icons-vue"
+import { Refresh, Delete, Position, Setting, CircleCloseFilled, CircleCheckFilled, Ticket } from "@element-plus/icons-vue"
 
 interface VersiaInformo {
   versio: String;
