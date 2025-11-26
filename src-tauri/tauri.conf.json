@@ -1,8 +1,8 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
-    "productName": "serial_komunikilo",
+    "productName": "serial_port_tool",
     "version": "0.0.39",
-    "identifier": "tk.autu.serial-komunikilo",
+    "identifier": "tk.autu.serial-port-tool",
     "build": {
         "beforeDevCommand": "bun run dev",
         "devUrl": "http://localhost:1420",
@@ -14,7 +14,7 @@
         "windows": [
             {
                 "label": "main",
-                "title": "serial_komunikilo",
+                "title": "serial_port_tool",
                 "width": 1200,
                 "height": 800
             }
@@ -34,7 +34,7 @@
             "icons/icon.ico"
         ],
         "createUpdaterArtifacts": true,
-        "publisher": "Ĵak Bel P."
+        "publisher": "Jack Bell P."
     },
     "plugins": {
         "updater": {
