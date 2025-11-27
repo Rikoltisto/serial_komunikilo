@@ -67,8 +67,7 @@
             <div class="flex items-center justify-between">
               <span class="text-xl font-extrabold text-indigo-800">数据接收</span>
               <div class="flex items-center gap-4">
-                <el-switch v-model="controller.receive_hex" active-text="HEX接收" inactive-text="ASCII"
-                  size="large" />
+                <el-switch v-model="controller.receive_hex" active-text="HEX接收" inactive-text="ASCII" size="large" />
                 <el-switch v-model="controller.auto_scroll" active-text="自动滚动" size="large" />
                 <el-button type="danger" :icon="Delete" @click="clear_receive_buffer" plain round
                   class="font-medium hover:bg-red-50">清空接收</el-button>
@@ -84,10 +83,8 @@
             <div class="flex items-center justify-between">
               <span class="text-xl font-extrabold text-indigo-800">数据发送</span>
               <div class="flex items-center gap-4">
-                <el-switch v-model="controller.send_hex" active-text="HEX发送" inactive-text="ASCII"
-                  size="large" />
-                <el-switch v-model="controller.auto_send" active-text="定时发送" @change="enable_auto_send"
-                  size="large" />
+                <el-switch v-model="controller.send_hex" active-text="HEX发送" inactive-text="ASCII" size="large" />
+                <el-switch v-model="controller.auto_send" active-text="定时发送" @change="enable_auto_send" size="large" />
                 <div class="flex items-center">
                   <el-input-number v-model="controller.send_interval" :min="100" :step="100" controls-position="right"
                     class="w-32" :disabled="!controller.auto_send" />
@@ -115,20 +112,20 @@
               <span class="text-gray-600 font-medium">当前版本:</span>
               <span
                 class="inline-flex items-center px-4 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-700 border border-gray-300">
-                {{ updated_information?.current_version }}
+                {{ update_information?.current_version }}
               </span>
             </div>
             <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg border border-green-200">
               <span class="text-green-700 font-bold">最新版本:</span>
               <span
                 class="inline-flex items-center px-4 py-1 text-sm font-bold rounded-full bg-green-200 text-green-800">
-                {{ updated_information?.version }}
+                {{ update_information?.version }}
               </span>
             </div>
             <div class="flex items-center justify-between border-b pb-3 border-gray-200 mt-4">
               <span class="text-gray-600 font-medium">发布日期:</span>
               <span class="font-medium text-gray-700">
-                {{ updated_information?.date }}
+                {{ update_information?.date }}
               </span>
             </div>
             <div
@@ -163,9 +160,9 @@
         <div class="p-2 space-y-4">
           <el-text type="info" class="text-base block">
             版本变更：
-            <span class="font-bold text-indigo-600 ml-1">{{ updated_information?.current_version }} → {{
-              updated_information?.version
-            }}</span>
+            <span class="font-bold text-indigo-600 ml-1">{{ update_information?.current_version }} → {{
+              update_information?.version
+              }}</span>
           </el-text>
           <el-text type="info" class="text-sm block mb-2">
             下载进度：
@@ -174,18 +171,15 @@
             striped striped-flow :duration="10" :text-inside="true" />
         </div>
       </el-dialog>
-      <el-dialog v-model="update_log_visibility" :title="'版本更新日志: ' + updated_information?.version" width="500px"
+      <el-dialog v-model="update_log_visibility" :title="'版本更新日志: ' + update_information?.version" width="500px"
         :close-on-click-modal="true" :close-on-press-escape="true" class="rounded-xl shadow-xl">
         <div class="p-1">
           <el-scrollbar max-height="350px" class="log-scrollbar">
-            <el-timeline>
-              <el-timeline-item :timestamp="updated_information?.version + ' (' + updated_information?.date + ')'"
+            <el-timeline class="pl-1">
+              <el-timeline-item :timestamp="update_information?.version + ' (' + update_information?.date + ')'"
                 type="success" placement="top">
                 <el-card class="shadow-sm">
-                  <h4>功能优化与新增</h4>
-                  <p>新增：支持深色模式切换。</p>
-                  <p>优化：提升数据加载速度 30%。</p>
-                  <p>修复：修正了定时发送逻辑中的一个小错误。</p>
+                  <div v-html="get_rendered_content()" class="markdown-body"></div>
                 </el-card>
               </el-timeline-item>
               <el-timeline-item timestamp="其他版本日志" type="info" placement="top">
@@ -205,6 +199,8 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { onMounted, reactive, ref } from "vue";
 import { Refresh, Delete, Position, Setting, CircleCloseFilled, CircleCheckFilled, Ticket } from "@element-plus/icons-vue"
+import MarkdownIt from "markdown-it";
+import "github-markdown-css/github-markdown.css";
 
 interface UpdateMetadata {
   version: String;
@@ -233,12 +229,21 @@ type DownloadEvent =
 //Update Interface.
 let update_message_visibility = ref(false);
 let update_download_message_visibility = ref(false);
-let updated_information = ref<UpdateMetadata>();
+let update_information = ref<UpdateMetadata>({
+  version: "",
+  current_version: "",
+  note: "",
+  date: "",
+});
 let on_events = new Channel<DownloadEvent>();
 let content_length = ref<number>(0);
 let percent = ref<number>();
 let file_path = ref<string>("");
 let update_log_visibility = ref(false);
+//Create a Markdown parser.
+let md = new MarkdownIt();
+
+
 //Main Interface.
 let settings = reactive({
   selected_serial_port: '',
@@ -299,20 +304,20 @@ on_events.onmessage = async (message) => {
 async function check_for_updates() {
   let result = await invoke("check_for_updates");
   if (result != null) {
-    updated_information.value = format_time(result as UpdateMetadata);
+    update_information.value = format_time(result as UpdateMetadata);
     update_message_visibility.value = true;
   }
 }
 
-function format_time(updated_information: UpdateMetadata): UpdateMetadata {
+function format_time(update_information: UpdateMetadata): UpdateMetadata {
   //Split by space.
-  const date = updated_information.date.split(" ");
+  const date = update_information.date.split(" ");
   const [year, month, day] = date[0].split("-");
 
   //Convert the time format.
-  updated_information.date = `${month}月${day}日${year}年`;
+  update_information.date = `${month}月${day}日${year}年`;
 
-  return updated_information;
+  return update_information;
 }
 
 async function download() {
@@ -331,6 +336,10 @@ async function install() {
   await invoke("install", { file_path: file_path.value });
 }
 
+function get_rendered_content() {
+  return md.render(String(update_information.value.note));
+}
+//Main Interface.
 async function refresh_serial_ports() {
 
 }
