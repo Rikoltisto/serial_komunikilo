@@ -167,7 +167,6 @@
               updated_information?.version
             }}</span>
           </el-text>
-          <br />
           <el-text type="info" class="text-sm block mb-2">
             下载进度：
           </el-text>
