@@ -42,15 +42,16 @@ jobs:
       - name: Read release notes
         id: read-notes
         run: |
-          DATE=$(date '+%m月%d日%Y年')
+          $DATE = Get-Date -Format "MM月dd日yyyy年"
 
-          NOTES=$(cat .github/workflows/markdown/release.md)
-          OTES="${NOTES//__DATE__/$DATE}"
-
-          NOTES="${NOTES//'%'/'%25'}"
-          NOTES="${NOTES//$'\n'/'%0A'}"
-          NOTES="${NOTES//$'\r'/'%0D'}"
-          echo "notes=$NOTES" >> $GITHUB_OUTPUT
+          $NOTES = Get-Content .github/workflows/markdown/release.md -Raw
+          $NOTES = $NOTES -replace '__DATE__', $DATE
+          
+          $NOTES = $NOTES -replace '%', '%25'
+          $NOTES = $NOTES -replace "`n", '%0A'
+          $NOTES = $NOTES -replace "`r", '%0D'
+          
+          echo "notes=$NOTES" >> $env:GITHUB_OUTPUT
 
         # Use Tauri operations.
       - name: Build the application
