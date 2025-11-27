@@ -48,8 +48,6 @@ jobs:
           $NOTES = $NOTES -replace '__DATE__', $DATE
           
           $NOTES = $NOTES -replace '%', '%25'
-          $NOTES = $NOTES -replace "`n", '%0A'
-          $NOTES = $NOTES -replace "`r", '%0D'
           
           echo "notes=$NOTES" >> $env:GITHUB_OUTPUT
 
