@@ -1,5 +1,5 @@
-name: konstruado_de_eldonaĵo
-# Triggera Maniero.
+name: release
+# Trigger Method.
 on:
   push:
     tags:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   release:
-    # Ĉar necesas krei eldonaĵon, necesas agordi skribpermeson.
+    # Write permissions must be set because a release needs to be created.
     permissions:
       contents: write
     strategy:
@@ -20,39 +20,52 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Elpaki Deponejon
+      - name: Back up the repository
         uses: actions/checkout@v4
 
-      - name: Instali Rust-stabilan
+      - name: Install the stable version of Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Agordi Node
+      - name: Set up the Node
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
 
-      - name: Agordi Bun
+      - name: Set up the Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Instali Antaŭpartajn Dependaĵojn
+      - name: Install the prerequisites
         run: bun install
 
-        # Uzi Tauri-actions
-      - name: Konstrui la Aplikaĵon
+      - name: Read release notes
+        id: read-notes
+        run: |
+          DATE=$(date '+%m月%d日%Y年')
+
+          NOTES=$(cat .github/workflows/markdown/release.md)
+          OTES="${NOTES//__DATE__/$DATE}"
+
+          NOTES="${NOTES//'%'/'%25'}"
+          NOTES="${NOTES//$'\n'/'%0A'}"
+          NOTES="${NOTES//$'\r'/'%0D'}"
+          echo "notes=$NOTES" >> $GITHUB_OUTPUT
+
+        # Use Tauri operations.
+      - name: Build the application
         id: build
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Privata Ŝlosilo
+          # Private Key.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY}}
-          # Pasfrazo por la Privata Ŝlosilo
+          # Private Key Password.
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: eldono-v__VERSION__
-          releaseName: "Eldonaĵo v__VERSION__"
-          releaseBodyFile: .github\workflows\markdown\eldona.md
+          tagName: release-v__VERSION__
+          releaseName: "Version v__VERSION__"
+          releaseBodyFile: ${{ steps.read-notes.outputs.notes }}
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
