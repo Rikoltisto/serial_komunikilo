@@ -49,7 +49,7 @@ jobs:
           
           $NOTES = $NOTES -replace '%', '%25'
           
-          echo "notes=$NOTES" >> $env:GITHUB_OUTPUT
+          "notes=$NOTES" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
         # Use Tauri operations.
       - name: Build the application
