@@ -17,7 +17,7 @@
             <div class="flex w-full gap-2">
               <el-select v-model="settings.selected_serial_port" placeholder="请选择串口" class="flex-grow rounded-lg"
                 :disabled="is_connected">
-                <el-option v-for="port in portList" :key="port.value" :label="port.label" :value="port.value" />
+                <el-option v-for="port in port_list" :label="port" :value="port" />
               </el-select>
               <el-button :icon="Refresh" circle @click="refresh_serial_ports" :disabled="is_connected"
                 class="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-600" />
@@ -201,6 +201,8 @@ import { onMounted, reactive, ref } from "vue";
 import { Refresh, Delete, Position, Setting, CircleCloseFilled, CircleCheckFilled, Ticket } from "@element-plus/icons-vue"
 import MarkdownIt from "markdown-it";
 import "github-markdown-css/github-markdown.css";
+import { ElNotification } from "element-plus";
+import 'element-plus/es/components/notification/style/css'
 
 interface UpdateMetadata {
   version: String;
@@ -253,11 +255,7 @@ let settings = reactive({
   pareco: 'none',
 });
 
-const portList = ref([
-  { label: 'COM1 - USB-SERIAL CH340', value: 'COM1' },
-  { label: 'COM3 - 蓝牙串口', value: 'COM3' },
-  { label: 'COM5', value: 'COM5' },
-]);
+let port_list = ref<String[]>();
 
 const baudRateOptions = ref([
   9600, 19200, 38400, 57600, 115200, 921600
@@ -277,6 +275,7 @@ let send_data = ref('');
 
 onMounted(async () => {
   check_for_updates();
+  refresh_serial_ports();
 });
 
 on_events.onmessage = async (message) => {
@@ -341,7 +340,16 @@ function get_rendered_content() {
 }
 //Main Interface.
 async function refresh_serial_ports() {
+  let result = await invoke<String[]>("get_all_serial_port");
 
+  port_list.value = result;
+
+  ElNotification({
+    title: '成功',
+    message: '串口刷新成功',
+    type: 'success',
+    duration: 1000,
+  })
 }
 
 async function open_connection() {

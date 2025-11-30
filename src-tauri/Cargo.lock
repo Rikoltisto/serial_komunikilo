@@ -3516,7 +3516,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "serial_komunikilo"
+name = "serial_port_tool"
 version = "0.1.0"
 dependencies = [
  "serde",

@@ -4,6 +4,7 @@ use tauri::Manager;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 mod commands;
+mod serial;
 mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -24,6 +25,7 @@ pub fn run() {
             updater::download,
             updater::install,
             commands::exit,
+            serial::get_all_serial_port,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

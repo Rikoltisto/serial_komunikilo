@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    serial_komunikilo_lib::run()
+    serial_port_tool_lib::run()
 }
