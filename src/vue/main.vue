@@ -25,7 +25,7 @@
           </el-form-item>
           <el-form-item label="波特率" class="mb-5">
             <el-select v-model="settings.baud_rate" placeholder="请选择波特率" class="w-full" :disabled="is_connected">
-              <el-option v-for="rate in baudRateOptions" :key="rate" :label="rate" :value="rate" />
+              <el-option v-for="rate in baud_rate_options" :key="rate" :label="rate" :value="rate" />
             </el-select>
           </el-form-item>
           <div class="grid grid-cols-2 gap-4">
@@ -52,7 +52,7 @@
             </el-select>
           </el-form-item>
           <el-form-item class="mt-8 pt-4 border-t border-gray-200">
-            <el-button :type="is_connected ? 'danger' : 'success'" @click="open_connection"
+            <el-button :type="is_connected ? 'danger' : 'success'" @click="trigger_connection"
               class="w-full text-base font-bold transition-transform transform hover:scale-[1.01]"
               :icon="is_connected ? CircleCloseFilled : CircleCheckFilled" size="large">
               {{ is_connected ? '断开连接' : '打开串口' }}
@@ -257,7 +257,7 @@ let settings = reactive({
 
 let port_list = ref<String[]>();
 
-const baudRateOptions = ref([
+const baud_rate_options = ref([
   9600, 19200, 38400, 57600, 115200, 921600
 ]);
 
@@ -352,7 +352,7 @@ async function refresh_serial_ports() {
   })
 }
 
-async function open_connection() {
+async function trigger_connection() {
 
 }
 
