@@ -34,21 +34,21 @@
                 <el-option label="8" :value="8" />
                 <el-option label="7" :value="7" />
                 <el-option label="6" :value="6" />
+                <el-option label="5" :value="5" />
               </el-select>
             </el-form-item>
             <el-form-item label="停止位">
               <el-select v-model="settings.stop_bits" class="w-full" :disabled="is_connected">
                 <el-option label="1" :value="1" />
-                <el-option label="1.5" :value="1.5" />
                 <el-option label="2" :value="2" />
               </el-select>
             </el-form-item>
           </div>
           <el-form-item label="校验位" class="mb-auto">
-            <el-select v-model="settings.pareco" class="w-full" :disabled="is_connected">
-              <el-option label="None" value="none" />
-              <el-option label="Even" value="even" />
-              <el-option label="Odd" value="odd" />
+            <el-select v-model="settings.parity" class="w-full" :disabled="is_connected">
+              <el-option label="None" :value="0" />
+              <el-option label="Even" :value="1" />
+              <el-option label="Odd" :value="2" />
             </el-select>
           </el-form-item>
           <el-form-item class="mt-8 pt-4 border-t border-gray-200">
@@ -162,7 +162,7 @@
             版本变更：
             <span class="font-bold text-indigo-600 ml-1">{{ update_information?.current_version }} → {{
               update_information?.version
-              }}</span>
+            }}</span>
           </el-text>
           <el-text type="info" class="text-sm block mb-2">
             下载进度：
@@ -252,7 +252,7 @@ let settings = reactive({
   baud_rate: 115200,
   data_bits: 8,
   stop_bits: 1,
-  pareco: 'none',
+  parity: 0,
 });
 
 let port_list = ref<String[]>();
@@ -340,6 +340,8 @@ function get_rendered_content() {
 }
 //Main Interface.
 async function refresh_serial_ports() {
+  settings.selected_serial_port = '';
+
   let result = await invoke<String[]>("get_all_serial_port");
 
   port_list.value = result;
@@ -353,7 +355,35 @@ async function refresh_serial_ports() {
 }
 
 async function trigger_connection() {
-
+  if (is_connected.value) {
+    await invoke("close_serial_port");
+    is_connected.value = false;
+    ElNotification({
+      title: '成功',
+      message: '关闭串口',
+      type: 'success',
+      duration: 1000,
+    })
+  } else {
+    if (settings.selected_serial_port == "") {
+      ElNotification({
+        title: '警告',
+        message: '在打开串口前，选择串口',
+        type: 'warning',
+        duration: 1000,
+      })
+    } else {
+      await invoke("open_serial_port", { s: settings });
+      is_connected.value = true;
+      console.log(1);
+      ElNotification({
+        title: '成功',
+        message: '打开串口成功',
+        type: 'success',
+        duration: 1000,
+      })
+    }
+  }
 }
 
 async function clear_receive_buffer() {
