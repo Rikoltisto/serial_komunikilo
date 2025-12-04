@@ -75,7 +75,7 @@
             </div>
           </template>
           <el-input v-model="received_data" type="textarea" :rows="15" readonly placeholder="等待接收数据..."
-            class="flex-grow receive-textarea-custom" ref="receiveTextarea" />
+            class="flex-grow receive-textarea-custom" ref="receive_textarea" />
         </el-card>
         <el-card class="shadow-xl rounded-2xl transition-all duration-300 hover:shadow-2xl"
           :body-style="{ padding: '24px' }">
@@ -162,7 +162,7 @@
             版本变更：
             <span class="font-bold text-indigo-600 ml-1">{{ update_information?.current_version }} → {{
               update_information?.version
-            }}</span>
+              }}</span>
           </el-text>
           <el-text type="info" class="text-sm block mb-2">
             下载进度：
@@ -197,11 +197,11 @@
 
 <script setup lang="ts">
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { Refresh, Delete, Position, Setting, CircleCloseFilled, CircleCheckFilled, Ticket } from "@element-plus/icons-vue"
 import MarkdownIt from "markdown-it";
 import "github-markdown-css/github-markdown.css";
-import { ElNotification } from "element-plus";
+import { ElInput, ElNotification } from "element-plus";
 import 'element-plus/es/components/notification/style/css'
 
 interface UpdateMetadata {
@@ -247,6 +247,10 @@ let md = new MarkdownIt();
 
 
 //Main Interface.
+interface ReceivePayload {
+  content: number[],
+}
+
 let settings = reactive({
   selected_serial_port: '',
   baud_rate: 115200,
@@ -257,11 +261,11 @@ let settings = reactive({
 
 let port_list = ref<String[]>();
 
-const baud_rate_options = ref([
+let baud_rate_options = ref([
   9600, 19200, 38400, 57600, 115200, 921600
 ]);
 
-const controller = reactive({
+let controller = reactive({
   receive_hex: false,
   auto_scroll: true,
   send_hex: false,
@@ -270,8 +274,12 @@ const controller = reactive({
 });
 
 let is_connected = ref(false);
-let received_data = ref('');
-let send_data = ref('');
+let received_data = ref("");
+let send_data = ref("");
+let on_receive_payload = new Channel<ReceivePayload>();
+let receive_textarea = ref<InstanceType<typeof ElInput> | null>(null);
+let timer_id = ref<number | null>(null);
+
 
 onMounted(async () => {
   check_for_updates();
@@ -295,7 +303,7 @@ on_events.onmessage = async (message) => {
       break;
     case "Finished":
       await sleep(3000);
-      install();
+      await install();
       break;
   }
 };
@@ -375,7 +383,7 @@ async function trigger_connection() {
     } else {
       await invoke("open_serial_port", { s: settings });
       is_connected.value = true;
-      console.log(1);
+      await invoke("read_serial_data", { on_receive_payload });
       ElNotification({
         title: '成功',
         message: '打开串口成功',
@@ -387,14 +395,132 @@ async function trigger_connection() {
 }
 
 async function clear_receive_buffer() {
-
+  received_data.value = "";
 }
 
 async function enable_auto_send() {
+  if (!is_connected) {
+    return;
+  }
+  if (timer_id.value !== null) {
+      clearInterval(timer_id.value);
+  }
+  if (!send_data.value) {
+    return;
+  }
 
+  if (controller.auto_send) {
+    start_auto_send();
+  } else {
+    stop_auto_send();
+  }
 }
 
 async function send_serial_data() {
+  if (!send_data.value) {
+    ElNotification({
+      title: '警告',
+      message: '发送内容不能为空',
+      type: 'warning',
+      duration: 1000,
+    })
+    return;
+  }
 
+  let payload_bytes: number[] = [];
+
+  if (controller.send_hex) {
+    payload_bytes = hex_to_bytes(send_data.value)
+  } else {
+    payload_bytes = Array.from(new TextEncoder().encode(send_data.value));
+  }
+  await invoke("send_serial_data", { data: payload_bytes });
 }
+
+on_receive_payload.onmessage = async (payload) => {
+  if (controller.receive_hex == true) {
+    received_data.value += bytes_to_hex(payload.content);
+  } else {
+    received_data.value += new TextDecoder('utf-8').decode(new Uint8Array(payload.content));
+  }
+
+  auto_scroll();
+}
+
+function bytes_to_hex(bytes: number[]): string {
+  return bytes.map(byte => {
+    return byte.toString(16).toUpperCase();
+  }).join(' ') + " ";
+}
+
+function auto_scroll() {
+  if (!controller.auto_scroll) {
+    return;
+  }
+
+  nextTick(() => {
+    if (receive_textarea.value) {
+      let el = receive_textarea.value.textarea;
+
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    }
+  });
+}
+
+function hex_to_bytes(hex_string: string): number[] {
+  let clean_hex = hex_string.replace(/[\s,\r\n]/g, '').toUpperCase();
+
+  let bytes: number[] = [];
+
+  if (clean_hex.length % 2 !== 0) {
+    ElNotification({
+      title: '错误',
+      message: 'HEX格式错误',
+      type: 'error',
+      duration: 1000,
+    })
+    return bytes;
+  }
+
+  for (let i = 0; i < clean_hex.length; i += 2) {
+    const byte_string = clean_hex.substring(i, i + 2);
+    const byte = parseInt(byte_string, 16);
+
+    if (isNaN(byte)) {
+      ElNotification({
+        title: '错误',
+        message: '包含无效的十六进制字符',
+        type: 'error',
+        duration: 1000,
+      })
+    }
+
+    bytes.push(byte);
+  }
+
+  return bytes;
+}
+
+function start_auto_send() {
+  timer_id.value = setInterval(() => {
+    send_serial_data(); 
+  }, controller.send_interval);
+}
+
+function stop_auto_send() {
+  if (timer_id.value !== null) {
+    clearInterval(timer_id.value);
+    timer_id.value = null;
+  }
+}
+
+watch(
+    () => controller.send_interval,
+    () => {
+      stop_auto_send();
+      start_auto_send();
+    }
+  );
 </script>

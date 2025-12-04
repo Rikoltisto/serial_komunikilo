@@ -20,7 +20,10 @@ pub fn run() {
             Ok(())
         })
         .manage(updater::PendingUpdate(Mutex::new(None)))
-        .manage(serial::GlobalSerialManager(Mutex::new(None)))
+        .manage(serial::GlobalSerialManager(
+            tokio::sync::Mutex::new(None),
+            tokio::sync::Mutex::new(None),
+        ))
         .invoke_handler(tauri::generate_handler![
             updater::check_for_updates,
             updater::download,
@@ -29,6 +32,8 @@ pub fn run() {
             serial::get_all_serial_port,
             serial::open_serial_port,
             serial::close_serial_port,
+            serial::send_serial_data,
+            serial::read_serial_data,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
