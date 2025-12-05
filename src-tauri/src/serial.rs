@@ -2,7 +2,7 @@ use serde::Serialize;
 use tauri::{State, ipc::Channel};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt, ReadHalf, WriteHalf},
-    sync::Mutex,
+    sync::Mutex, task::JoinHandle,
 };
 use tokio_serial::SerialStream;
 
@@ -38,7 +38,9 @@ pub async fn open_serial_port(
 }
 
 #[tauri::command]
-pub async fn close_serial_port() {}
+pub async fn close_serial_port(app: tauri::AppHandle,) {
+    app.restart();
+}
 
 #[tauri::command]
 pub async fn get_all_serial_port() -> Option<Vec<String>> {
